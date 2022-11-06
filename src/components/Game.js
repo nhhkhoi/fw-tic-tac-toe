@@ -97,20 +97,22 @@ function Game() {
       <h2 className="result">Winner is: {winner ? winner : "N/N"}</h2>
       <div className="flex-row">
         <div className="game">
-          <span className="player">Next player is: {xIsNext ? "X" : "O"}</span>
-          <Board squares={squares} handleClick={handleClick} />
-        </div>
-        <div className="history">
-          <h4>History</h4>
-          <ul>
-            {history.map((move) => (
-              <li key={move.id}>
-                <button onClick={() => handleGoBack(move.count)}>
-                  {move.title}
-                </button>
-              </li>
-            ))}
-          </ul>
+          <div className="player">Next player is: {xIsNext ? "X" : "O"}</div>
+          <div className="flex-row">
+            <Board squares={squares} handleClick={handleClick} />
+            <div className="history">
+              <h4>History</h4>
+              <ul>
+                {history.map((move) => (
+                  <li key={move.id}>
+                    <button onClick={() => handleGoBack(move.count)}>
+                      {move.title}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
       <button onClick={handleRestart} className="restart-btn">
