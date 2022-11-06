@@ -5,6 +5,10 @@ function Game() {
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [xIsNext, setXIsNext] = useState(true);
   const [winner, setWinner] = useState(null);
+  const [history, setHistory] = useState([
+    { id: 1, title: "Go to game Start", count: 0 },
+  ]);
+  const [prevState, setPrevState] = useState([Array(9).fill(null)]);
 
   //Declaring a Winner
   useEffect(() => {
@@ -49,6 +53,17 @@ function Game() {
 
     newSquares[i] = xIsNext ? "X" : "O";
 
+    setHistory([
+      ...history,
+      {
+        id: Date.now(),
+        title: `Go to move #${history.length}`,
+        count: history.length,
+      },
+    ]);
+
+    setPrevState([...prevState, newSquares]);
+
     setSquares(newSquares);
     setXIsNext((changeState) => !changeState);
   };
@@ -57,14 +72,46 @@ function Game() {
   const handleRestart = () => {
     setSquares(Array(9).fill(null));
     setXIsNext(true);
+
+    setHistory([{ id: 1, title: "Go to game Start", count: 0 }]);
+    setPrevState([Array(9).fill(null)]);
+  };
+
+  //Handle Go back
+  const handleGoBack = (goBackLength) => {
+    setSquares(prevState[goBackLength]);
+    setXIsNext(() => {
+      if (goBackLength % 2 === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    setHistory(history.filter((a) => a.count <= goBackLength));
+
+    setPrevState(prevState.slice(0, goBackLength + 1));
   };
 
   return (
     <div className="main">
       <h2 className="result">Winner is: {winner ? winner : "N/N"}</h2>
-      <div className="game">
-        <span className="player">Next player is: {xIsNext ? "X" : "O"}</span>
-        <Board squares={squares} handleClick={handleClick} />
+      <div className="flex-row">
+        <div className="game">
+          <span className="player">Next player is: {xIsNext ? "X" : "O"}</span>
+          <Board squares={squares} handleClick={handleClick} />
+        </div>
+        <div className="history">
+          <h4>History</h4>
+          <ul>
+            {history.map((move) => (
+              <li key={move.id}>
+                <button onClick={() => handleGoBack(move.count)}>
+                  {move.title}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
       <button onClick={handleRestart} className="restart-btn">
         Restart
